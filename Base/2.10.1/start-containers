@@ -1,0 +1,81 @@
+#!/bin/bash
+
+# Variables declaration
+
+IMAGENAME=""
+
+# Helpers functions 
+
+check_nodes () {
+   if [ `docker ps -a --filter "name=hadoop" | tail -n +2 | wc -l` -gt 0 ]
+   then
+      replace_nodes
+   else
+      start_nodes
+   fi
+}
+
+replace_nodes () {
+   remove_nodes
+   start_nodes
+}
+
+remove_nodes () {
+   docker rm  -f hadoop-master hadoop-slave1 hadoop-slave2  &> /dev/null
+}
+
+start_nodes () {
+   docker run -itd --net=hadoop -p 50070:50070 -p 8088:8088 -p 7077:7077 -p 16010:16010 --name hadoop-master --hostname hadoop-master $IMAGENAME &> /dev/null
+   i=1
+   while [ $i -lt 3 ]
+   do
+      port=$(( 8039 + $i ))
+	sudo docker run -itd -p $port:8042 --net=hadoop --name hadoop-slave$i --hostname hadoop-slave$i $IMAGENAME &> /dev/null
+	i=$(( $i + 1 ))
+done 
+}
+
+usage () {
+    echo "Usage: $0 
+                 [ -i <nom de l'image> ] "
+}
+
+exit_err () {
+    usage
+    exit 1
+}
+
+# Main script
+
+while getopts ":i:" option;
+do
+   case "${option}" in
+       i)
+         IMAGENAME=${OPTARG}
+         ;;
+   esac
+done
+
+shift $((OPTIND-1)) 
+if [ -z "${IMAGENAME}" ];
+then
+#    echo "[`date`] ERR - Vous devez entrer le nombre de datanodes"
+    exit_err
+fi
+
+if [ `docker network ls | grep hadoop - | wc -l` -eq 0 ];
+then
+    docker network create --driver=bridge hadoop
+fi
+
+check_nodes
+
+docker exec -it hadoop-master /root/start-hadoop.sh
+echo -e "java process en cours sur le master node:"
+docker exec -it hadoop-master jps
+echo -e "java process en cours sur les slave nodes:"
+echo -e "hadoop-slave1"
+docker exec -it hadoop-slave1 jps
+echo -e "hadoop-slave2"
+docker exec -it hadoop-slave2 jps
+
