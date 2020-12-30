@@ -7,8 +7,7 @@ The base version provide only HDFS and YARN. It can be used as base-image to add
 ## Supported Versions
 Base system: Hadoop 2.10.1
 
-## Repository Structure
-### Base
+## Base Image installation
 Contains the scripts and Dockerfile to create an Hadoop base image and to deploy automatically the cluster on your Docker environment.
 The dockerfile is used to build the image is based on the lastest Ubuntu image (20.04 at the time of writing). In addition to this OS, the Dockerfile will install Hadoop version 2.10.1, copy the config files (these config files are originally provided by https://github.com/kiwenlau/hadoop-cluster-docker) and finally it will format the nodename.  
 The image is built with the command:  
