@@ -34,8 +34,7 @@ ResourceManager
 NameNode  
 SecondaryNameNode  
   
-__Slave Nodes:__  
-(On each nodes)  
+__Slave Nodes (On each nodes) :__  
 DataNode  
 NodeManager  
 
