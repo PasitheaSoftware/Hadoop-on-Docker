@@ -27,7 +27,7 @@ one can use the start-containers shell script to deploy automatically the cluste
 
 `$ sudo ./start-containers -i <hadoop image name>`
 
-This script check is the containers are already deployed, if yes it will remove them and deploy them again from the image. Once the container are started, it will execute a script on the master node to start hdfs and yarn on the master and to configure the two slave nodes containers that were deployed.  
+This script check is the containers are already deployed, if yes it will remove them and deploy them again from the image. Once the container are started, it will execute a script on the master node to start hdfs and yarn on the master and to add the two slave nodes to the configuration.  
 Once the start of the cluster is done, the script executes the command jps (java ps) on each nodes and display the command output. Use this output to check that the following process are running ont the nodes.  
   
 __Master Node :__  
@@ -40,4 +40,8 @@ __Slave Nodes:__
 DataNode  
 NodeManager  
 
-From this point your hadoop configuration is up and running.
+To check that the containers are deployed and running use the following command:
+
+`$ sudo docker ps --filter "name=hadoop" --filter "status=running"`  
+
+The output must show three containers (*hadoop-master*, *hadoop-slave1* and *hadoop-slave2*) running. From this point your hadoop configuration is up and running.
